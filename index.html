@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brown Dots Coffee Shop | Premium Coffee Experience</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --dark-brown: #3b2a1a;
+            --coffee-brown: #6f4e37;
+            --light-brown: #8b6b5b;
+            --cream: #f5f5dc;
+            --beige: #f3ede3;
+            --antique-white: #faebd7;
+            --caramel: #c8ad7f;
+            --gold: #d4a574;
+            --text-dark: #2c1810;
+            --text-light: #5d4037;
+            --white: #ffffff;
+            --error: #c44b4b;
+            --success: #4b8b3b;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: var(--beige);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+        }
+
+        /* Loading Animation */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--dark-brown);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .coffee-cup {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--cream);
+            border-radius: 0 0 30px 30px;
+            position: relative;
+            animation: fill 2s infinite;
+        }
+
+        .coffee-cup::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            right: -20px;
+            width: 15px;
+            height: 25px;
+            border: 4px solid var(--cream);
+            border-radius: 0 15px 15px 0;
+        }
+
+        .steam {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 20px;
+            background: var(--cream);
+            border-radius: 50%;
+            opacity: 0;
+            animation: steam 2s infinite;
+        }
+
+        .steam:nth-child(2) { left: 30%; animation-delay: 0.3s; }
+        .steam:nth-child(3) { left: 70%; animation-delay: 0.6s; }
+
+        @keyframes steam {
+            0% { opacity: 0; transform: translateX(-50%) translateY(0); }
+            50% { opacity: 0.6; }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+        }
+
+        @keyframes fill {
+            0%, 100% { background: linear-gradient(to top, var(--coffee-brown) 0%, transparent 0%); }
+            50% { background: linear-gradient(to top, var(--coffee-brown) 80%, transparent 80%); }
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(59, 42, 26, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--cream);
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--cream);
+            text-decoration: none;
+            font-weight: 400;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gold);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-links a:hover {
+            color: var(--gold);
+        }
+
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.3rem;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--gold);
+            color: var(--dark-brown);
+            font-size: 0.7rem;
+            font-weight: 700;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-menu {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .mobile-menu span {
+            width: 25px;
+            height: 3px;
+            background: var(--cream);
+            transition: all 0.3s ease;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(135deg, rgba(59, 42, 26, 0.8), rgba(111, 78, 55, 0.6)), url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1920') center/cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--cream);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            z-index: 2;
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: var(--gold);
+            color: var(--dark-brown);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            border: 2px solid var(--gold);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-primary:hover {
+            background: transparent;
+            color: var(--gold);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(212, 165, 116, 0.3);
+        }
+
+        .btn-secondary {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            background: transparent;
+            color: var(--coffee-brown);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            border: 2px solid var(--coffee-brown);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            background: var(--coffee-brown);
+            color: var(--cream);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Ad Banner Section */
+        .ad-banner {
+            background: var(--dark-brown);
+            padding: 1rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .ad-slider {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+
+        .ad-item {
+            min-width: 100%;
+            text-align: center;
+            color: var(--cream);
+            font-size: 1.1rem;
+            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .ad-item span {
+            font-size: 1.5rem;
+        }
+
+        /* Section Styles */
+        section {
+            padding: 5rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            color: var(--dark-brown);
+            margin-bottom: 3rem;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: var(--gold);
+        }
+
+        /* Menu Section */
+        .menu-section {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .menu-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 0.8rem 1.5rem;
+            border: 2px solid var(--coffee-brown);
+            background: transparent;
+            color: var(--coffee-brown);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-family: 'Lato', sans-serif;
+        }
+
+        .tab-btn.active, .tab-btn:hover {
+            background: var(--coffee-brown);
+            color: var(--cream);
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .menu-card {
+            background: var(--beige);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+            border: 1px solid rgba(111, 78, 55, 0.1);
+        }
+
+        .menu-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .menu-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .menu-card:hover .menu-image {
+            transform: scale(1.05);
+        }
+
+        .menu-content {
+            padding: 1.5rem;
+        }
+
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.5rem;
+        }
+
+        .menu-title {
+            font-size: 1.3rem;
+            color: var(--dark-brown);
+            margin-bottom: 0.3rem;
+        }
+
+        .menu-price {
+            font-size: 1.2rem;
+            color: var(--coffee-brown);
+            font-weight: 700;
+        }
+
+        .rating {
+            color: var(--gold);
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .add-to-cart {
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--coffee-brown);
+            color: var(--cream);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .add-to-cart:hover {
+            background: var(--dark-brown);
+            transform: scale(1.02);
+        }
+
+        /* Cart Sidebar */
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: var(--white);
+            box-shadow: -5px 0 30px rgba(0,0,0,0.2);
+            z-index: 2000;
+            transition: right 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-sidebar.open {
+            right: 0;
+        }
+
+        .cart-header {
+            background: var(--dark-brown);
+            color: var(--cream);
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-cart {
+            background: none;
+            border: none;
+            color: var(--cream);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(111, 78, 55, 0.1);
+        }
+
+        .cart-item-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        .cart-item-details {
+            flex: 1;
+        }
+
+        .cart-item-title {
+            font-weight: 600;
+            color: var(--dark-brown);
+            margin-bottom: 0.3rem;
+        }
+
+        .cart-item-price {
+            color: var(--coffee-brown);
+            font-weight: 700;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .qty-btn {
+            width: 30px;
+            height: 30px;
+            border: 1px solid var(--coffee-brown);
+            background: transparent;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .qty-btn:hover {
+            background: var(--coffee-brown);
+            color: var(--cream);
+        }
+
+        .remove-item {
+            color: var(--error);
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: inline-block;
+        }
+
+        .cart-footer {
+            padding: 1.5rem;
+            border-top: 2px solid var(--beige);
+            background: var(--beige);
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--dark-brown);
+            margin-bottom: 1rem;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--gold);
+            color: var(--dark-brown);
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkout-btn:hover {
+            background: var(--dark-brown);
+            color: var(--cream);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Payment Modal */
+        .payment-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: var(--white);
+            border-radius: 20px;
+            padding: 2.5rem;
+            width: 90%;
+            max-width: 500px;
+            z-index: 3000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .payment-modal.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .payment-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .payment-header h2 {
+            color: var(--dark-brown);
+            font-size: 1.8rem;
+        }
+
+        .payment-methods {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .payment-method {
+            flex: 1;
+            min-width: 100px;
+            padding: 1rem;
+            border: 2px solid var(--beige);
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .payment-method.selected {
+            border-color: var(--coffee-brown);
+            background: rgba(111, 78, 55, 0.1);
+        }
+
+        .payment-method-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid var(--beige);
+            border-radius: 8px;
+            font-family: 'Lato', sans-serif;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--coffee-brown);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .close-payment {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        /* Offers Section */
+        .offers-section {
+            background: linear-gradient(135deg, var(--antique-white), var(--cream));
+            border-radius: 20px;
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .offers-slider {
+            display: flex;
+            gap: 2rem;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            padding-bottom: 1rem;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .offer-card {
+            min-width: 300px;
+            background: var(--white);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            scroll-snap-align: start;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .offer-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .offer-card:hover::before {
+            opacity: 1;
+        }
+
+        .offer-card:hover {
+            transform: scale(1.05);
+        }
+
+        .offer-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: var(--gold);
+            color: var(--dark-brown);
+            border-radius: 20px;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .offer-title {
+            font-size: 1.5rem;
+            color: var(--dark-brown);
+            margin-bottom: 0.5rem;
+        }
+
+        .offer-desc {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+
+        /* About Section */
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .about-image {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .about-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .about-text h2 {
+            font-size: 2.5rem;
+            color: var(--dark-brown);
+            margin-bottom: 1.5rem;
+        }
+
+        .about-text p {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-item {
+            text-align: center;
+            padding: 2rem;
+            background: var(--white);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--coffee-brown);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: var(--cream);
+            font-size: 1.5rem;
+        }
+
+        /* Contact Section */
+        .contact-section {
+            background: var(--dark-brown);
+            color: var(--cream);
+            border-radius: 20px;
+            padding: 4rem;
+        }
+
+        .contact-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+        }
+
+        .contact-info h3 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .contact-details {
+            margin-bottom: 2rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .social-btn {
+            width: 40px;
+            height: 40px;
+            background: var(--coffee-brown);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--cream);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-btn:hover {
+            background: var(--gold);
+            color: var(--dark-brown);
+            transform: translateY(-3px);
+        }
+
+        .contact-form {
+            background: rgba(255,255,255,0.05);
+            padding: 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .contact-form .form-group label {
+            color: var(--cream);
+        }
+
+        .contact-form input, .contact-form textarea {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.2);
+            color: var(--cream);
+        }
+
+        .contact-form input::placeholder, .contact-form textarea::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--gold);
+            color: var(--dark-brown);
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: var(--cream);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--dark-brown);
+            color: var(--cream);
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 4000;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            background: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        /* Success Modal */
+        .success-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: var(--white);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            z-index: 5000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .success-modal.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: white;
+            font-size: 2rem;
+            animation: scaleIn 0.5s ease;
+        }
+
+        @keyframes scaleIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark-brown);
+            color: var(--cream);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 70px);
+                background: var(--dark-brown);
+                flex-direction: column;
+                padding: 2rem;
+                transition: left 0.3s ease;
+            }
+
+            .nav-links.active {
+                left: 0;
+            }
+
+            .mobile-menu {
+                display: flex;
+            }
+
+            .about-content, .contact-content {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cart-sidebar {
+                width: 100%;
+                right: -100%;
+            }
+
+            .menu-section, .offers-section, .contact-section {
+                padding: 2rem 1rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loader" id="loader">
+        <div style="position: relative;">
+            <div class="steam"></div>
+            <div class="steam"></div>
+            <div class="steam"></div>
+            <div class="coffee-cup"></div>
+            <p style="color: var(--cream); margin-top: 20px; font-family: 'Playfair Display', serif;">Brewing...</p>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <a href="#" class="logo">
+            <div class="logo-icon">☕</div>
+            Brown Dots Coffee
+        </a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#menu">Menu</a></li>
+            <li><a href="#offers">Offers</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li class="cart-icon" onclick="toggleCart()">
+                🛒
+                <span class="cart-count" id="cartCount">0</span>
+            </li>
+        </ul>
+        <div class="mobile-menu" onclick="toggleMobileMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1>Brewed Fresh,<br>Just for You ☕</h1>
+            <p>Experience the perfect blend of premium beans and artisanal craftsmanship</p>
+            <a href="#menu" class="btn-primary">Order Now</a>
+        </div>
+    </section>
+
+    <!-- Ad Banner -->
+    <div class="ad-banner">
+        <div class="ad-slider" id="adSlider">
+            <div class="ad-item"><span>☕</span> Buy 1 Get 1 Free - Every Morning 8-10 AM!</div>
+            <div class="ad-item"><span>🌅</span> Morning Coffee Discount - 25% OFF Before 9 AM</div>
+            <div class="ad-item"><span>🍪</span> Free Cookie with Any Large Coffee Purchase</div>
+        </div>
+    </div>
+
+    <!-- Menu Section -->
+    <section id="menu">
+        <h2 class="section-title">Our Menu</h2>
+        <div class="menu-section">
+            <div class="menu-tabs">
+                <button class="tab-btn active" onclick="filterMenu('hot')">Hot Coffee ☕</button>
+                <button class="tab-btn" onclick="filterMenu('iced')">Iced Coffee 🧊</button>
+                <button class="tab-btn" onclick="filterMenu('snacks')">Snacks 🍪</button>
+                <button class="tab-btn" onclick="filterMenu('desserts')">Desserts 🍰</button>
+            </div>
+            <div class="menu-grid" id="menuGrid">
+                <!-- Menu items will be dynamically inserted here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Offers Section -->
+    <section id="offers">
+        <h2 class="section-title">Special Offers</h2>
+        <div class="offers-section">
+            <div class="offers-slider">
+                <div class="offer-card">
+                    <span class="offer-badge">WEEKEND SPECIAL</span>
+                    <h3 class="offer-title">Weekend Brunch Deal</h3>
+                    <p class="offer-desc">Get 20% OFF on all breakfast combos every Saturday & Sunday</p>
+                    <button class="btn-secondary" onclick="scrollToMenu()">View Menu</button>
+                </div>
+                <div class="offer-card">
+                    <span class="offer-badge">LIMITED TIME</span>
+                    <h3 class="offer-title">20% OFF Espresso</h3>
+                    <p class="offer-desc">Premium single-origin espresso shots at unbeatable prices</p>
+                    <button class="btn-secondary" onclick="scrollToMenu()">Order Now</button>
+                </div>
+                <div class="offer-card">
+                    <span class="offer-badge">LOYALTY REWARD</span>
+                    <h3 class="offer-title">Buy 5 Get 1 Free</h3>
+                    <p class="offer-desc">Collect stamps with every purchase and earn free drinks</p>
+                    <button class="btn-secondary" onclick="showToast('Coming soon! Join our loyalty program')">Join Now</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+        <div class="about-content">
+            <div class="about-image">
+                <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800" alt="Coffee Shop Interior">
+            </div>
+            <div class="about-text">
+                <h2>Our Story</h2>
+                <p>Founded in 2018, Brown Dots Coffee Shop began with a simple mission: to serve exceptional coffee in a warm, welcoming environment. Our name comes from the beautiful brown dots that appear on perfectly roasted coffee beans.</p>
+                <p>We source our beans directly from sustainable farms in Ethiopia, Colombia, and Guatemala, ensuring every cup tells a story of quality and care.</p>
+                <a href="#contact" class="btn-primary">Visit Us</a>
+            </div>
+        </div>
+        <div class="features-grid">
+            <div class="feature-item">
+                <div class="feature-icon">🌱</div>
+                <h4>Fresh Beans</h4>
+                <p>Roasted daily in small batches for maximum freshness</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">👨‍🍳</div>
+                <h4>Expert Baristas</h4>
+                <p>Trained professionals passionate about perfect pours</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🏠</div>
+                <h4>Cozy Atmosphere</h4>
+                <p>Designed for comfort, conversation, and creativity</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact">
+        <div class="contact-section">
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>Get In Touch</h3>
+                    <p style="margin-bottom: 2rem; opacity: 0.9;">We'd love to hear from you. Visit us or send a message!</p>
+                    
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <span>📍</span>
+                            <span>123 Coffee Street, Brew City, BC 12345</span>
+                        </div>
+                        <div class="contact-item">
+                            <span>📞</span>
+                            <span>+94 704488253</span>
+                        </div>
+                        <div class="contact-item">
+                            <span>✉️</span>
+                            <span>harithmadura@gmail.com</span>
+                        </div>
+                        <div class="contact-item">
+                            <span>🕐</span>
+                            <span>Mon-Fri: 7AM - 10PM | Sat-Sun: 8AM - 12PM</span>
+                        </div>
+                    </div>
+
+                    <div class="social-links">
+                        <a href="#" class="social-btn">f</a>
+                        <a href="#" class="social-btn">in</a>
+                        <a href="#" class="social-btn">ig</a>
+                        <a href="#" class="social-btn">tw</a>
+                    </div>
+                </div>
+
+                <form class="contact-form" onsubmit="handleContactSubmit(event)">
+                    <div class="form-group">
+                        <label>Your Name</label>
+                        <input type="text" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" placeholder="john@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" placeholder="+1 (555) 000-0000">
+                    </div>
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea rows="4" placeholder="How can we help you?" required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Brown Dots Coffee Shop. All rights reserved. | Made with ☕ and ❤️</p>
+    </footer>
+
+    <!-- Cart Sidebar -->
+    <div class="overlay" id="overlay" onclick="toggleCart()"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>Your Cart</h3>
+            <button class="close-cart" onclick="toggleCart()">✕</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- Cart items will be dynamically inserted here -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal">$0.00</span>
+            </div>
+            <button class="checkout-btn" onclick="openPayment()">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="overlay" id="paymentOverlay" onclick="closePayment()"></div>
+    <div class="payment-modal" id="paymentModal">
+        <button class="close-payment" onclick="closePayment()">✕</button>
+        <div class="payment-header">
+            <h2>Payment Details</h2>
+            <p style="color: var(--text-light); margin-top: 0.5rem;">Complete your order securely</p>
+        </div>
+
+        <div class="payment-methods">
+            <div class="payment-method selected" onclick="selectPayment(this, 'card')">
+                <div class="payment-method-icon">💳</div>
+                <div>Card</div>
+            </div>
+            <div class="payment-method" onclick="selectPayment(this, 'cash')">
+                <div class="payment-method-icon">🚚</div>
+                <div>Cash</div>
+            </div>
+            <div class="payment-method" onclick="selectPayment(this, 'mobile')">
+                <div class="payment-method-icon">📱</div>
+                <div>Mobile</div>
+            </div>
+        </div>
+
+        <form id="paymentForm" onsubmit="processPayment(event)">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="cardName" placeholder="John Doe" required>
+            </div>
+            
+            <div id="cardFields">
+                <div class="form-group">
+                    <label>Card Number</label>
+                    <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCardNumber(this)">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Expiry Date</label>
+                        <input type="text" id="expiry" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this)">
+                    </div>
+                    <div class="form-group">
+                        <label>CVV</label>
+                        <input type="text" id="cvv" placeholder="123" maxlength="3">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" id="mobileFields" style="display: none;">
+                <label>Mobile Payment Number</label>
+                <input type="tel" placeholder="+1 (555) 000-0000">
+            </div>
+
+            <div style="background: var(--beige); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span>Subtotal:</span>
+                    <span id="paymentSubtotal">$0.00</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span>Tax (8%):</span>
+                    <span id="paymentTax">$0.00</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-weight: 700; color: var(--dark-brown); font-size: 1.1rem;">
+                    <span>Total:</span>
+                    <span id="paymentTotal">$0.00</span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary" style="width: 100%;">Pay Now</button>
+        </form>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="success-modal" id="successModal">
+        <div class="success-icon">✓</div>
+        <h2 style="color: var(--dark-brown); margin-bottom: 1rem;">Payment Successful!</h2>
+        <p style="color: var(--text-light); margin-bottom: 2rem;">Thank you for your order. Your coffee will be ready shortly!</p>
+        <button class="btn-primary" onclick="closeSuccess()">Continue Shopping</button>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <div class="toast-icon">✓</div>
+        <span id="toastMessage">Added to cart!</span>
+    </div>
+
+    <script>
+        // Menu Data
+        const menuItems = {
+            hot: [
+                { id: 1, name: "Classic Espresso", price: 3.50, rating: 5, image: "https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?w=400", desc: "Rich and bold single shot" },
+                { id: 2, name: "Caramel Latte", price: 4.50, rating: 5, image: "https://images.unsplash.com/photo-1534778101976-62847782c213?w=400", desc: "Espresso with steamed milk and caramel" },
+                { id: 3, name: "Cappuccino", price: 4.00, rating: 4, image: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=400", desc: "Equal parts espresso, steamed milk, and foam" },
+                { id: 4, name: "Mocha Deluxe", price: 5.00, rating: 5, image: "https://images.unsplash.com/photo-1578314675249-a6910f80cc4e?w=400", desc: "Chocolate espresso with whipped cream" },
+                { id: 5, name: "Americano", price: 3.00, rating: 4, image: "https://images.unsplash.com/photo-1551030173-122aabc4489c?w=400", desc: "Espresso diluted with hot water" },
+                { id: 6, name: "Macchiato", price: 3.75, rating: 4, image: "https://images.unsplash.com/photo-1485808191679-5f86510681a2?w=400", desc: "Espresso with a dash of froth" }
+            ],
+            iced: [
+                { id: 7, name: "Iced Americano", price: 3.50, rating: 4, image: "https://images.unsplash.com/photo-1517701604599-bb29b5dd7359?w=400", desc: "Chilled espresso with water" },
+                { id: 8, name: "Cold Brew", price: 4.50, rating: 5, image: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400", desc: "Steeped for 12 hours, smooth taste" },
+                { id: 9, name: "Iced Latte", price: 4.50, rating: 4, image: "https://images.unsplash.com/photo-1517959105821-eaf2591984ca?w=400", desc: "Espresso with cold milk over ice" },
+                { id: 10, name: "Frappuccino", price: 5.50, rating: 5, image: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=400", desc: "Blended ice coffee with whipped cream" },
+                { id: 11, name: "Iced Mocha", price: 5.00, rating: 4, image: "https://images.unsplash.com/photo-1577968897966-3d4325b36b61?w=400", desc: "Chocolate iced coffee delight" },
+                { id: 12, name: "Nitro Cold Brew", price: 5.50, rating: 5, image: "https://images.unsplash.com/photo-1541167760496-1628856ab772?w=400", desc: "Nitrogen-infused for creamy texture" }
+            ],
+            snacks: [
+                { id: 13, name: "Butter Croissant", price: 3.50, rating: 5, image: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400", desc: "Flaky, buttery French pastry" },
+                { id: 14, name: "Chocolate Muffin", price: 3.00, rating: 4, image: "https://images.unsplash.com/photo-1607958996333-41aef7caefaa?w=400", desc: "Double chocolate chip muffin" },
+                { id: 15, name: "Bagel with Cream Cheese", price: 4.00, rating: 4, image: "https://images.unsplash.com/photo-1623334044303-241021148842?w=400", desc: "Fresh toasted bagel" },
+                { id: 16, name: "Almond Biscotti", price: 2.50, rating: 5, image: "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=400", desc: "Perfect for dipping in coffee" }
+            ],
+            desserts: [
+                { id: 17, name: "Tiramisu", price: 6.00, rating: 5, image: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=400", desc: "Classic Italian coffee dessert" },
+                { id: 18, name: "Cheesecake", price: 5.50, rating: 5, image: "https://images.unsplash.com/photo-1524351199678-941a58a3df26?w=400", desc: "New York style with berry compote" },
+                { id: 19, name: "Chocolate Brownie", price: 4.50, rating: 4, image: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=400", desc: "Fudgy brownie with walnuts" },
+                { id: 20, name: "Cinnamon Roll", price: 4.00, rating: 5, image: "https://images.unsplash.com/photo-1509365465985-25d11c17e812?w=400", desc: "Warm roll with cream cheese frosting" }
+            ]
+        };
+
+        let cart = JSON.parse(localStorage.getItem('brownDotsCart')) || [];
+        let currentCategory = 'hot';
+
+        // Initialize
+        window.onload = function() {
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+            }, 2000);
+            
+            renderMenu('hot');
+            updateCart();
+            initAdSlider();
+            initScrollAnimations();
+        };
+
+        // Ad Slider
+        function initAdSlider() {
+            const slider = document.getElementById('adSlider');
+            let currentSlide = 0;
+            
+            setInterval(() => {
+                currentSlide = (currentSlide + 1) % 3;
+                slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+            }, 4000);
+        }
+
+        // Mobile Menu
+        function toggleMobileMenu() {
+            document.getElementById('navLinks').classList.toggle('active');
+        }
+
+        // Menu Functions
+        function filterMenu(category) {
+            currentCategory = category;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            renderMenu(category);
+        }
+
+        function renderMenu(category) {
+            const grid = document.getElementById('menuGrid');
+            const items = menuItems[category];
+            
+            grid.innerHTML = items.map(item => `
+                <div class="menu-card fade-in">
+                    <img src="${item.image}" alt="${item.name}" class="menu-image">
+                    <div class="menu-content">
+                        <div class="menu-header">
+                            <div>
+                                <h3 class="menu-title">${item.name}</h3>
+                                <div class="rating">${'⭐'.repeat(item.rating)}</div>
+                            </div>
+                            <div class="menu-price">$${item.price.toFixed(2)}</div>
+                        </div>
+                        <p style="color: var(--text-light); margin-bottom: 1rem; font-size: 0.9rem;">${item.desc}</p>
+                        <button class="add-to-cart" onclick="addToCart(${item.id}, '${category}')">
+                            <span>+</span> Add to Cart
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Trigger animations
+            setTimeout(() => {
+                document.querySelectorAll('.fade-in').forEach(el => {
+                    el.classList.add('visible');
+                });
+            }, 100);
+        }
+
+        function scrollToMenu() {
+            document.getElementById('menu').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Cart Functions
+        function addToCart(itemId, category) {
+            const item = menuItems[category].find(i => i.id === itemId);
+            const existingItem = cart.find(i => i.id === itemId);
+            
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({ ...item, quantity: 1 });
+            }
+            
+            saveCart();
+            updateCart();
+            showToast(`${item.name} added to cart!`);
+        }
+
+        function removeFromCart(itemId) {
+            cart = cart.filter(item => item.id !== itemId);
+            saveCart();
+            updateCart();
+        }
+
+        function updateQuantity(itemId, change) {
+            const item = cart.find(i => i.id === itemId);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity <= 0) {
+                    removeFromCart(itemId);
+                } else {
+                    saveCart();
+                    updateCart();
+                }
+            }
+        }
+
+        function saveCart() {
+            localStorage.setItem('brownDotsCart', JSON.stringify(cart));
+        }
+
+        function updateCart() {
+            const cartItems = document.getElementById('cartItems');
+            const cartCount = document.getElementById('cartCount');
+            const cartTotal = document.getElementById('cartTotal');
+            
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            cartCount.textContent = totalItems;
+            cartTotal.textContent = `$${totalPrice.toFixed(2)}`;
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<div style="text-align: center; padding: 3rem; color: var(--text-light);">Your cart is empty ☕</div>';
+            } else {
+                cartItems.innerHTML = cart.map(item => `
+                    <div class="cart-item">
+                        <img src="${item.image}" alt="${item.name}" class="cart-item-image">
+                        <div class="cart-item-details">
+                            <div class="cart-item-title">${item.name}</div>
+                            <div class="cart-item-price">$${item.price.toFixed(2)}</div>
+                            <div class="quantity-control">
+                                <button class="qty-btn" onclick="updateQuantity(${item.id}, -1)">-</button>
+                                <span>${item.quantity}</span>
+                                <button class="qty-btn" onclick="updateQuantity(${item.id}, 1)">+</button>
+                            </div>
+                            <span class="remove-item" onclick="removeFromCart(${item.id})">Remove</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function toggleCart() {
+            document.getElementById('cartSidebar').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        // Payment Functions
+        function openPayment() {
+            if (cart.length === 0) {
+                showToast('Your cart is empty!');
+                return;
+            }
+            
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const tax = subtotal * 0.08;
+            const total = subtotal + tax;
+            
+            document.getElementById('paymentSubtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('paymentTax').textContent = `$${tax.toFixed(2)}`;
+            document.getElementById('paymentTotal').textContent = `$${total.toFixed(2)}`;
+            
+            toggleCart();
+            document.getElementById('paymentModal').classList.add('active');
+            document.getElementById('paymentOverlay').classList.add('active');
+        }
+
+        function closePayment() {
+            document.getElementById('paymentModal').classList.remove('active');
+            document.getElementById('paymentOverlay').classList.remove('active');
+        }
+
+        function selectPayment(element, method) {
+            document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            
+            const cardFields = document.getElementById('cardFields');
+            const mobileFields = document.getElementById('mobileFields');
+            const cardNumber = document.getElementById('cardNumber');
+            const cardName = document.getElementById('cardName');
+            
+            if (method === 'card') {
+                cardFields.style.display = 'block';
+                mobileFields.style.display = 'none';
+                cardNumber.required = true;
+                cardName.required = true;
+            } else if (method === 'cash') {
+                cardFields.style.display = 'none';
+                mobileFields.style.display = 'none';
+                cardNumber.required = false;
+                cardName.required = true;
+            } else if (method === 'mobile') {
+                cardFields.style.display = 'none';
+                mobileFields.style.display = 'block';
+                cardNumber.required = false;
+                cardName.required = true;
+            }
+        }
+
+        function formatCardNumber(input) {
+            let value = input.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || '';
+            input.value = formattedValue;
+        }
+
+        function formatExpiry(input) {
+            let value = input.value.replace(/[^0-9]/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            input.value = value;
+        }
+
+        function processPayment(event) {
+            event.preventDefault();
+            
+            // Simulate processing
+            const btn = event.target.querySelector('button[type="submit"]');
+            const originalText = btn.textContent;
+            btn.textContent = 'Processing...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                closePayment();
+                document.getElementById('successModal').classList.add('active');
+                cart = [];
+                saveCart();
+                updateCart();
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }, 2000);
+        }
+
+        function closeSuccess() {
+            document.getElementById('successModal').classList.remove('active');
+            document.getElementById('paymentOverlay').classList.remove('active');
+        }
+
+        // Toast Notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Contact Form
+        function handleContactSubmit(event) {
+            event.preventDefault();
+            showToast('Message sent successfully! We will get back to you soon.');
+            event.target.reset();
+        }
+
+        // Scroll Animations
+        function initScrollAnimations() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.fade-in').forEach(el => {
+                observer.observe(el);
+            });
+        }
+
+        // Sticky Navbar Effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.style.padding = '0.5rem 5%';
+                navbar.style.boxShadow = '0 2px 30px rgba(0,0,0,0.3)';
+            } else {
+                navbar.style.padding = '1rem 5%';
+                navbar.style.boxShadow = '0 2px 20px rgba(0,0,0,0.2)';
+            }
+        });
+    </script>
+</body>
+</html>
